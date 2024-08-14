@@ -74,7 +74,6 @@ class Metamask:
         sleep_random()
         for i in range(12):
             self.ads.input_text(f"//input[@data-testid='recovery-phrase-input-{i}']", seed[i], timeout=1)
-            sleep_random()
         sleep_random()
         self.ads.click_element("//button[@data-testid='recovery-phrase-confirm']")
         sleep_random(3, 5)
@@ -99,7 +98,7 @@ class Metamask:
 
         seed_str = " ".join(seed)
 
-        write_text_to_file("new_wallets.txt", f"{address} {password} {seed_str}")
+        write_text_to_file("new_wallets.txt", f"{self.ads.profile_number} {address} {password} {seed_str}")
 
     def auth_metamask(self) -> None:
         """
@@ -168,7 +167,7 @@ class Metamask:
         address = self.ads.get_text("//button[@data-testid='address-copy-button-text']/span/div")
         sleep_random()
 
-        write_text_to_file("new_wallets.txt", f"{address} {self.password} {self.seed}")
+        write_text_to_file("new_wallets.txt", f"{self.ads.profile_number} {address} {self.password} {self.seed}")
 
     def connect(self):
         """
