@@ -17,12 +17,13 @@ class Metamask:
             "Chain ID": 59144,
             "Currency Symbol": "ETH",
         },
-        "chain 2": {
-            "Network name": "",
-            "New RPC URL": "",
-            "Chain ID": 0,
-            "Currency Symbol": "",
+        "BSC": {
+            "Network name": "BSC",
+            "New RPC URL": "https://bsc-pokt.nodies.app",
+            "Chain ID": 56,
+            "Currency Symbol": "BNB",
         },
+
     }
 
     def __init__(self, ads, password: str = None, seed: str = None):
@@ -74,6 +75,7 @@ class Metamask:
         sleep_random()
         for i in range(12):
             self.ads.input_text(f"//input[@data-testid='recovery-phrase-input-{i}']", seed[i], timeout=1)
+            sleep_random()
         sleep_random()
         self.ads.click_element("//button[@data-testid='recovery-phrase-confirm']")
         sleep_random(3, 5)
@@ -231,7 +233,7 @@ class Metamask:
                 if target_tab:
                     self.ads.driver.switch_to.window(target_tab)
                     sleep_random(2.5, 3.5)
-                    if button_switch := self.ads.find_element("//button[text()='Switch network']", 1):
+                    if button_switch := self.ads.find_element("//button[text()='Switch network' or text()='Сменить сеть']", 1):
                         button_switch.click()
                         sleep_random(3, 5)
                         continue
@@ -248,7 +250,7 @@ class Metamask:
     def select_chain(self, chain: str):
         """
         Выбирает сеть в metamask
-        :param chain:
+        :param chain: название сети как в метамаске
         :return:
         """
         if chain == self.ads.get_text("//button[@data-testid='network-display']/child::span"):
@@ -257,7 +259,7 @@ class Metamask:
         if self.ads.find_element(f"//p[text()='{chain}']", 3):
             self.ads.click_element(f"//p[text()='{chain}']")
         else:
-            self.ads.click_element("//button[text()='Add network']")
+            self.ads.click_element("//button[@aria-label='Закрыть' or @aria-label='Close']")
             self.set_chain(chain)
     def set_chain(self, chain: str):
         """
@@ -269,7 +271,7 @@ class Metamask:
         rpc = self.chains[chain]["New RPC URL"]
         chain_id = str(self.chains[chain]["Chain ID"])
         currency = self.chains[chain]["Currency Symbol"]
-        self.ads.open_url("chrome-extension://dnkeajhlnmgdemajdpdbafjakigbccbf/home.html#settings/networks/add-network")
+        self.ads.open_url(self._url+"#settings/networks/add-network")
         sleep_random(1, 3)
         self.ads.input_text("//input[@data-testid='network-form-network-name']", text=chain_name)
         self.ads.input_text("//input[@data-testid='network-form-rpc-url']", text=rpc)
@@ -277,5 +279,5 @@ class Metamask:
         self.ads.input_text("//input[@data-testid='network-form-chain-id']", text=chain_id)
         self.ads.input_text("//input[@data-testid='network-form-ticker-input']", text=currency)
         sleep_random(1, 3)
-        self.ads.click_element("//button[text()='Save']")
-        self.ads.click_element("//h6[contains(text(), 'Switch to')]")
+        self.ads.click_element("//button[text()='Save' or text()='Сохранить']")
+        self.ads.click_element("//h6[contains(text(), 'Switch to') or contains(text(), 'Сменить на')]")
